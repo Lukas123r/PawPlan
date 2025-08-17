@@ -10,6 +10,10 @@ data class Routine(
     val petId: Long,
     val name: String,
     val intervalDays: Int,
+    /** Optional category to group similar routines. */
+    val category: String = "",
+    /** Free-form note stored with the routine. */
+    val notes: String = "",
     val lastDone: LocalDateTime? = null,
     val active: Boolean = true,
     val snoozedUntil: LocalDateTime? = null,
