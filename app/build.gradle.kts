@@ -69,6 +69,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.accompanist.systemuicontroller)
     implementation(projects.core.design)
+    implementation(projects.core.domain)
+    implementation(projects.core.data)
     // Local data persistence
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.room.runtime)
