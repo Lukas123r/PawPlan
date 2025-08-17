@@ -10,7 +10,7 @@ import de.lshorizon.pawplan.ui.screen.home.HomeScreen
 import de.lshorizon.pawplan.ui.screen.OnboardingScreen
 import de.lshorizon.pawplan.ui.screen.pets.PetsScreen
 import de.lshorizon.pawplan.ui.screen.RoutineScreen
-import de.lshorizon.pawplan.ui.screen.SettingsScreen
+import de.lshorizon.pawplan.ui.screen.settings.SettingsScreen
 import de.lshorizon.pawplan.ui.screen.addpet.AddPetScreen
 import de.lshorizon.pawplan.ui.screen.addpet.EditPetScreen
 
