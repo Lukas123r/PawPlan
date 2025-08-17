@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PawPlan</string>
+    <string name="done">Done</string>
+    <string name="snooze_24h">Snooze 24h</string>
 </resources>
