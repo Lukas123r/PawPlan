@@ -13,6 +13,11 @@ sealed class NavRoutes(val route: String) {
     /** Route to add a new pet. */
     data object AddPet : NavRoutes("addPet")
 
+    /** Route to edit an existing pet. */
+    data object EditPet : NavRoutes("editPet/{id}") {
+        fun create(id: Long) = "editPet/$id"
+    }
+
     /** Route to add a routine. */
     data object AddRoutine : NavRoutes("addRoutine")
 
