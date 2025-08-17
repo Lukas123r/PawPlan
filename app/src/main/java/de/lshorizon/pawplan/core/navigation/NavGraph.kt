@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import de.lshorizon.pawplan.ui.screen.addroutine.AddRoutineScreen
 import de.lshorizon.pawplan.ui.screen.home.HomeScreen
-import de.lshorizon.pawplan.ui.screen.OnboardingScreen
+import de.lshorizon.pawplan.ui.screen.onboarding.OnboardingScreen
 import de.lshorizon.pawplan.ui.screen.pets.PetsScreen
 import de.lshorizon.pawplan.ui.screen.RoutineScreen
 import de.lshorizon.pawplan.ui.screen.settings.SettingsScreen
@@ -18,10 +18,10 @@ import de.lshorizon.pawplan.ui.screen.addpet.EditPetScreen
  * Central navigation graph connecting all screens.
  */
 @Composable
-fun NavGraph(navController: NavHostController = rememberNavController()) {
+fun NavGraph(navController: NavHostController = rememberNavController(), startDestination: String = NavRoutes.Home.route) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.Home.route
+        startDestination = startDestination
     ) {
         composable(NavRoutes.Home.route) { HomeScreen() }
         composable(NavRoutes.Pets.route) {
@@ -43,6 +43,12 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             RoutineScreen(id)
         }
         composable(NavRoutes.Settings.route) { SettingsScreen() }
-        composable(NavRoutes.Onboarding.route) { OnboardingScreen() }
+        composable(NavRoutes.Onboarding.route) {
+            OnboardingScreen(onFinished = {
+                navController.navigate(NavRoutes.AddPet.route) {
+                    popUpTo(NavRoutes.Onboarding.route) { inclusive = true }
+                }
+            })
+        }
     }
 }
