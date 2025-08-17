@@ -1,6 +1,7 @@
 package de.lshorizon.pawplan.core.domain.usecase
 
 import de.lshorizon.pawplan.core.domain.model.EventLog
+import de.lshorizon.pawplan.core.domain.model.EventType
 import de.lshorizon.pawplan.core.domain.repo.EventLogRepository
 import de.lshorizon.pawplan.core.domain.repo.RoutineRepository
 import java.time.LocalDate
@@ -17,6 +18,6 @@ class MarkRoutineDone(
         require(!now.toLocalDate().isAfter(LocalDate.now())) { "Date must be today or earlier" }
         val routine = routineRepo.getRoutine(id) ?: return
         routineRepo.updateRoutine(routine.copy(lastDone = now, snoozedUntil = null))
-        logRepo.addEvent(EventLog(routineId = id, timestamp = now))
+        logRepo.addEvent(EventLog(routineId = id, timestamp = now, type = EventType.DONE))
     }
 }
