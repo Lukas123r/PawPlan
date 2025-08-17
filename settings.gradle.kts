@@ -25,4 +25,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "PawPlan"
 include(":app")
+include(":core:design")
  
