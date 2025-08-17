@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import de.lshorizon.pawplan.ui.screen.AddPetScreen
 import de.lshorizon.pawplan.ui.screen.AddRoutineScreen
-import de.lshorizon.pawplan.ui.screen.HomeScreen
+import de.lshorizon.pawplan.ui.screen.home.HomeScreen
 import de.lshorizon.pawplan.ui.screen.OnboardingScreen
 import de.lshorizon.pawplan.ui.screen.PetsScreen
 import de.lshorizon.pawplan.ui.screen.RoutineScreen
