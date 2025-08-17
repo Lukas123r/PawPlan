@@ -5,13 +5,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import de.lshorizon.pawplan.ui.screen.AddPetScreen
 import de.lshorizon.pawplan.ui.screen.AddRoutineScreen
 import de.lshorizon.pawplan.ui.screen.home.HomeScreen
 import de.lshorizon.pawplan.ui.screen.OnboardingScreen
 import de.lshorizon.pawplan.ui.screen.pets.PetsScreen
 import de.lshorizon.pawplan.ui.screen.RoutineScreen
 import de.lshorizon.pawplan.ui.screen.SettingsScreen
+import de.lshorizon.pawplan.ui.screen.addpet.AddPetScreen
+import de.lshorizon.pawplan.ui.screen.addpet.EditPetScreen
 
 /**
  * Central navigation graph connecting all screens.
@@ -23,8 +24,19 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
         startDestination = NavRoutes.Home.route
     ) {
         composable(NavRoutes.Home.route) { HomeScreen() }
-        composable(NavRoutes.Pets.route) { PetsScreen() }
-        composable(NavRoutes.AddPet.route) { AddPetScreen() }
+        composable(NavRoutes.Pets.route) {
+            PetsScreen(
+                onAddPet = { navController.navigate(NavRoutes.AddPet.route) },
+                onEditPet = { id -> navController.navigate(NavRoutes.EditPet.create(id)) }
+            )
+        }
+        composable(NavRoutes.AddPet.route) {
+            AddPetScreen(onBack = { navController.popBackStack() })
+        }
+        composable(NavRoutes.EditPet.route) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")?.toLongOrNull() ?: 0L
+            EditPetScreen(petId = id, onBack = { navController.popBackStack() })
+        }
         composable(NavRoutes.AddRoutine.route) { AddRoutineScreen() }
         composable(NavRoutes.Routine.route) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id") ?: ""
