@@ -1,3 +1,6 @@
+// Use version catalogs to keep dependency versions centralized and readable
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         google {
@@ -17,6 +20,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    // Version catalog is loaded automatically from gradle/libs.versions.toml
 }
 
 rootProject.name = "PawPlan"
