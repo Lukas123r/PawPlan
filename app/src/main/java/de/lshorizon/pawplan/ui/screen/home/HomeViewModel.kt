@@ -33,7 +33,7 @@ class HomeViewModel(
     private val listDueRoutines = ListDueRoutines(routineRepo)
     private val listPets = ListPets(petRepo)
     private val markRoutineDone = MarkRoutineDone(routineRepo, eventRepo)
-    private val snoozeRoutine = SnoozeRoutine(routineRepo)
+    private val snoozeRoutine = SnoozeRoutine(routineRepo, eventRepo)
 
     private val _snackbar = MutableSharedFlow<String>()
     val snackbar = _snackbar.asSharedFlow()
