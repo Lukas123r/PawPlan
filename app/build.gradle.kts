@@ -36,6 +36,8 @@ android {
         // Target Java 17 for modern language features
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // Enable desugaring for java.time on older devices
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         // Generate Kotlin bytecode for Java 17
@@ -58,6 +60,9 @@ android {
 }
 
 dependencies {
+
+    // Desugaring library for java.time backport
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
