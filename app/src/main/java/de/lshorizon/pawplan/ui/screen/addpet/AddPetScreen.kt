@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.lshorizon.pawplan.core.data.repo.InMemoryPetRepository
+import de.lshorizon.pawplan.core.data.analytics.NoOpAnalytics
 import de.lshorizon.pawplan.core.domain.model.Pet
 import de.lshorizon.pawplan.core.domain.usecase.CreatePet
 import java.time.Instant
@@ -65,7 +66,7 @@ class AddPetViewModel(
     private val repo: InMemoryPetRepository = InMemoryPetRepository(),
 ) : PetFormViewModel(repo) {
 
-    private val createPet = CreatePet(repo)
+    private val createPet = CreatePet(repo, NoOpAnalytics()) // analytics event
 
     /** Trigger creation if the form is valid. */
     fun save(onSaved: () -> Unit) {

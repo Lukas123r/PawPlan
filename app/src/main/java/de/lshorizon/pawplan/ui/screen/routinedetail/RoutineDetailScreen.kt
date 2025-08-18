@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import de.lshorizon.pawplan.core.data.analytics.NoOpAnalytics
 import de.lshorizon.pawplan.core.data.repo.InMemoryEventLogRepository
 import de.lshorizon.pawplan.core.data.repo.InMemoryPetRepository
 import de.lshorizon.pawplan.core.data.repo.InMemoryRoutineRepository
@@ -112,8 +113,8 @@ class RoutineDetailViewModel(
     private val eventRepo: InMemoryEventLogRepository = InMemoryEventLogRepository(),
 ) : ViewModel() {
 
-    private val markDone = MarkRoutineDone(routineRepo, eventRepo)
-    private val snooze = SnoozeRoutine(routineRepo, eventRepo)
+    private val markDone = MarkRoutineDone(routineRepo, eventRepo, NoOpAnalytics()) // analytics event
+    private val snooze = SnoozeRoutine(routineRepo, eventRepo, NoOpAnalytics()) // analytics event
     private val history = GetHistoryByRoutine(eventRepo)
     private val listPets = ListPets(petRepo)
 

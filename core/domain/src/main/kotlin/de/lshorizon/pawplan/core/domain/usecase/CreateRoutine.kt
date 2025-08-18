@@ -1,5 +1,7 @@
 package de.lshorizon.pawplan.core.domain.usecase
 
+import de.lshorizon.pawplan.core.domain.analytics.Analytics
+import de.lshorizon.pawplan.core.domain.analytics.AnalyticsEvent
 import de.lshorizon.pawplan.core.domain.model.Routine
 import de.lshorizon.pawplan.core.domain.repo.RoutineRepository
 import java.time.LocalDateTime
@@ -7,14 +9,19 @@ import java.time.LocalDateTime
 /**
  * Creates a new care routine.
  */
-class CreateRoutine(private val repo: RoutineRepository) {
+class CreateRoutine(
+    private val repo: RoutineRepository,
+    private val analytics: Analytics,
+) {
 
     suspend operator fun invoke(routine: Routine): Routine {
         validate(routine)
         routine.lastDone?.let {
             require(!it.toLocalDate().isAfter(LocalDateTime.now().toLocalDate())) { "Date must be today or earlier" }
         }
-        return repo.addRoutine(routine)
+        val saved = repo.addRoutine(routine)
+        analytics.track(AnalyticsEvent.ADD_ROUTINE) // track routine creation
+        return saved
     }
 
     private fun validate(routine: Routine) {

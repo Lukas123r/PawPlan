@@ -23,6 +23,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.lshorizon.pawplan.core.data.repo.InMemoryPetRepository
 import de.lshorizon.pawplan.core.data.repo.InMemoryRoutineRepository
+import de.lshorizon.pawplan.core.data.analytics.NoOpAnalytics
 import de.lshorizon.pawplan.core.domain.model.Pet
 import de.lshorizon.pawplan.core.domain.model.Routine
 import de.lshorizon.pawplan.core.domain.usecase.CreateRoutine
@@ -84,7 +85,7 @@ class AddRoutineViewModel(
     private val petRepo: InMemoryPetRepository = InMemoryPetRepository(),
 ) : ViewModel() {
 
-    private val createRoutine = CreateRoutine(routineRepo)
+    private val createRoutine = CreateRoutine(routineRepo, NoOpAnalytics()) // analytics event
     private val listPets = ListPets(petRepo)
 
     /** Current form state exposed to the UI. */
