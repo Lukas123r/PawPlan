@@ -15,7 +15,7 @@ import de.lshorizon.pawplan.domain.routines.ListDueRoutines
 class DailySchedulerWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
-    private val listDueRoutines: ListDueRoutines,
+    private val listDueRoutines: ListDueRoutines // Use case to fetch due routines
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
         // TODO: horizon=3 Tage berechnen und Notifications planen
