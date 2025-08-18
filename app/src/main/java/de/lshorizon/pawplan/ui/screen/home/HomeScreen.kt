@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pets
+import androidx.compose.material.icons.outlined.Pets
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -88,7 +88,8 @@ fun RoutineCard(item: RoutineItem, onDone: () -> Unit, onSnooze: () -> Unit) {
         .padding(horizontal = 16.dp, vertical = 8.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Pets, contentDescription = null, modifier = Modifier.size(40.dp))
+                // Icon shows which pet the routine belongs to
+                Icon(Icons.Outlined.Pets, contentDescription = null, modifier = Modifier.size(40.dp))
                 Spacer(Modifier.size(16.dp))
                 Column(Modifier.weight(1f)) {
                     Text(item.title, style = MaterialTheme.typography.titleMedium)

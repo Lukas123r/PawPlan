@@ -1,11 +1,19 @@
 package de.lshorizon.pawplan
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 /**
- * Main application class that boots Hilt for dependency injection.
+ * Main application class bootstrapping Hilt and providing WorkManager config.
  */
 @HiltAndroidApp
-class PawPlanApp : Application()
+class PawPlanApp : Application(), Configuration.Provider {
+    @Inject lateinit var workerFactory: HiltWorkerFactory
+
+    override fun getWorkManagerConfiguration(): Configuration =
+        Configuration.Builder().setWorkerFactory(workerFactory).build()
+}
 
