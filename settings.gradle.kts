@@ -2,25 +2,24 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
+    // Repositories used for resolving plugins
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
-        mavenCentral()
         gradlePluginPortal()
+        google()
+        mavenCentral()
     }
+}
+plugins {
+    // Download missing JDKs automatically via Foojay
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    // Shared repositories for all modules
     repositories {
         google()
         mavenCentral()
     }
-    // Version catalog is loaded automatically from gradle/libs.versions.toml
 }
 
 rootProject.name = "PawPlan"
