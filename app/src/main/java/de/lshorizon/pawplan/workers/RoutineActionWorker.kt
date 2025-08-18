@@ -3,6 +3,11 @@ package de.lshorizon.pawplan.workers
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import de.lshorizon.pawplan.core.data.analytics.NoOpAnalytics
+import de.lshorizon.pawplan.core.data.repo.InMemoryEventLogRepository
+import de.lshorizon.pawplan.core.data.repo.InMemoryRoutineRepository
+import de.lshorizon.pawplan.core.domain.usecase.MarkRoutineDone
+import de.lshorizon.pawplan.core.domain.usecase.SnoozeRoutine
 import de.lshorizon.pawplan.notifications.RoutineNotificationWorker
 
 /**
@@ -23,15 +28,23 @@ class RoutineActionWorker(
     }
 
     private suspend fun markDone(id: String) {
-        // TODO: invoke MarkRoutineDone use case
+        // use simple repositories to update routine state
+        val useCase = MarkRoutineDone(routineRepo, eventRepo, analytics)
+        useCase(id.toLong(), java.time.LocalDateTime.now())
     }
 
     private suspend fun snooze(id: String) {
-        // TODO: invoke SnoozeRoutine use case with 24h
+        // default snooze duration of 24h
+        val useCase = SnoozeRoutine(routineRepo, eventRepo, analytics)
+        useCase(id.toLong(), 24)
     }
 
     companion object {
         const val KEY_ROUTINE_ID = "routineId"
         const val KEY_ACTION = "action"
+        // repositories for test injection
+        var routineRepo: InMemoryRoutineRepository = InMemoryRoutineRepository()
+        var eventRepo: InMemoryEventLogRepository = InMemoryEventLogRepository()
+        var analytics = NoOpAnalytics()
     }
 }
