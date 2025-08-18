@@ -80,8 +80,14 @@ dependencies {
     // Dependency injection
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
     // Background work handling
-    implementation(libs.androidx.work.ktx)
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    // Extended icon set for pets etc.
+    implementation("androidx.compose.material:material-icons-extended")
+    // Compose lifecycle helpers
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.2")
     testImplementation(libs.junit)
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)

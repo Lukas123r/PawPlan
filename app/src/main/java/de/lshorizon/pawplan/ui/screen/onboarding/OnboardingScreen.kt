@@ -8,7 +8,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Pets
+import androidx.compose.material.icons.outlined.Pets
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +40,8 @@ fun OnboardingScreen(
     Column(Modifier.fillMaxSize()) {
         HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { page ->
             when (page) {
-                0 -> OnboardingSlide(Icons.Default.Pets, "Welcome", "Manage all your pets in one place.")
+                // Intro slide showing app purpose
+                0 -> OnboardingSlide(Icons.Outlined.Pets, "Welcome", "Manage all your pets in one place.")
                 1 -> OnboardingSlide(Icons.Default.List, "Routines", "Organize daily care tasks with ease.")
                 2 -> OnboardingSlide(Icons.Default.Check, "Ready?", "Let's add your first friend!")
             }

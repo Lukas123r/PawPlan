@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -84,7 +85,7 @@ private fun ToggleSetting(label: String, value: Boolean, onChange: (Boolean) -> 
 private fun LanguageSetting(current: String, onChange: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     val label = if (current == "de") "Deutsch" else "English"
-    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
         OutlinedTextField(
             value = label,
             onValueChange = {},
@@ -105,7 +106,7 @@ private fun LanguageSetting(current: String, onChange: (String) -> Unit) {
 @Composable
 private fun PlannerHourSetting(hour: Int, onChange: (Int) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
         OutlinedTextField(
             value = String.format("%02d:00", hour),
             onValueChange = {},
@@ -132,7 +133,7 @@ private fun ThemeSetting(theme: String, onChange: (String) -> Unit) {
         "dark" -> "Dark"
         else -> "System"
     }
-    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
         OutlinedTextField(
             value = label,
             onValueChange = {},

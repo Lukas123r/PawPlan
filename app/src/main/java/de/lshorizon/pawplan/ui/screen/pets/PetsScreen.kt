@@ -6,7 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Pets
+import androidx.compose.material.icons.outlined.Pets
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -59,7 +59,8 @@ private fun PetRow(pet: Pet, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(Icons.Default.Pets, contentDescription = null, modifier = Modifier.size(40.dp))
+        // Pet icon represents each animal entry
+        Icon(Icons.Outlined.Pets, contentDescription = null, modifier = Modifier.size(40.dp))
         Spacer(Modifier.width(16.dp))
         Column {
             Text(pet.name, style = MaterialTheme.typography.titleMedium)

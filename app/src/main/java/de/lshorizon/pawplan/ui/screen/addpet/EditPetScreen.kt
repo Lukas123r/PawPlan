@@ -5,6 +5,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -38,7 +40,8 @@ fun EditPetScreen(
             onPhotoFromCamera = viewModel::onPhotoBitmapChange,
             onNotesChange = viewModel::onNotesChange,
             onSave = { viewModel.save(onBack) },
-            modifier = androidx.compose.ui.Modifier.padding(padding)
+            // Reuse PetForm with surrounding padding
+            modifier = Modifier.padding(padding)
         )
     }
 }

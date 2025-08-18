@@ -15,7 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -229,7 +229,8 @@ private fun RoutineForm(
                 value = state.customInterval,
                 onValueChange = onCustomIntervalChange,
                 label = { Text("Custom weeks") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                // Use numeric keyboard for custom interval input
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
         }

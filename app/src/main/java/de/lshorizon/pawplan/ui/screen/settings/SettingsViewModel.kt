@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.lshorizon.pawplan.data.settings.SettingsRepository
-import de.lshorizon.pawplan.notifications.Scheduler
+import de.lshorizon.pawplan.notifications.enqueueDailyScheduler
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -18,8 +18,9 @@ import androidx.work.WorkManager
 class SettingsViewModel(
     app: Application,
     private val repo: SettingsRepository = SettingsRepository(app.applicationContext),
-    private val scheduler: Scheduler = Scheduler(app.applicationContext),
 ) : AndroidViewModel(app) {
+
+    private val context = app.applicationContext
 
     /** Exposes current preference values to the screen. */
     val state: StateFlow<SettingsState> = combine(
@@ -54,9 +55,10 @@ class SettingsViewModel(
     /** Reschedule background work whenever reminder parameters change. */
     private fun reschedule(notifications: Boolean, remind: Boolean, hour: Int) {
         if (notifications) {
-            scheduler.scheduleDailySweep(hour)
+            // Re-enqueue daily planner sweep when notifications are enabled
+            enqueueDailyScheduler(context, hour)
         } else {
-            WorkManager.getInstance(getApplication()).cancelAllWork()
+            WorkManager.getInstance(context).cancelAllWork()
         }
     }
 }

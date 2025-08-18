@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
+import androidx.compose.material3.FilterChip
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -194,14 +195,11 @@ fun PetForm(
         }
 
         Text("Species")
-        SingleChoiceSegmentedButtonRow {
-            Species.values().forEachIndexed { index, type ->
-                SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(index, Species.values().size),
-                    checked = state.species == type,
-                    onCheckedChange = { onSpeciesChange(type) }
-                ) { Text(type.name) }
-            }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Simple chips to pick the pet's species
+            FilterChip(selected = state.species == Species.DOG, onClick = { onSpeciesChange(Species.DOG) }, label = { Text("Dog") })
+            FilterChip(selected = state.species == Species.CAT, onClick = { onSpeciesChange(Species.CAT) }, label = { Text("Cat") })
+            FilterChip(selected = state.species == Species.OTHER, onClick = { onSpeciesChange(Species.OTHER) }, label = { Text("Other") })
         }
 
         OutlinedTextField(
