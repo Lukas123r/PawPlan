@@ -5,8 +5,8 @@ plugins {
 }
 
 android {
-    namespace = "de.lshorizon.pawplan.core.design"
-    compileSdk = 34
+    namespace = "de.lshorizon.pawplan.core.design" // Manifest package removed
+    compileSdk = 36 // Build this library against Android 14 APIs
 
     defaultConfig {
         minSdk = 24

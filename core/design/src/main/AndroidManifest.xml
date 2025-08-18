@@ -1,1 +1,5 @@
-<manifest package="de.lshorizon.pawplan.core.design" />
+<!-- Manifest without package; namespace defined in Gradle -->
+<manifest>
+    <application />
+</manifest>
+

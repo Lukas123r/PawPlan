@@ -3,6 +3,8 @@ import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
 
 plugins {
     // Base Android and Kotlin support for subprojects
@@ -16,6 +18,19 @@ plugins {
 }
 
 subprojects {
+    // Align all Android modules with API 36 to satisfy newer dependencies
+    plugins.withId("com.android.application") {
+        extensions.configure(ApplicationExtension::class) {
+            compileSdk = 36 // Build against Android 14 (API 36)
+            defaultConfig { targetSdk = 36 } // Target the latest Android
+        }
+    }
+    plugins.withId("com.android.library") {
+        extensions.configure(LibraryExtension::class) {
+            compileSdk = 36 // Keep library modules on Android 14 APIs
+        }
+    }
+
     // Ensure Java-based modules use JDK 17
     plugins.withType<JavaPlugin> {
         extensions.configure(JavaPluginExtension::class) {

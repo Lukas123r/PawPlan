@@ -11,12 +11,12 @@ plugins {
 android {
     // Application namespace
     namespace = "de.lshorizon.pawplan"
-    compileSdk = 34
+    compileSdk = 36 // Build against Android 14 APIs
 
     defaultConfig {
         applicationId = "de.lshorizon.pawplan"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36 // Target the latest Android version
         versionCode = 1
         versionName = "1.0"
 
