@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.menuAnchor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -171,7 +173,9 @@ private fun RoutineForm(
                 label = { Text("Pet") },
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = petExpanded) },
-                modifier = Modifier.menuAnchor().fillMaxWidth()
+                modifier = Modifier
+                    .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true) // anchor text field for pet drop-down
+                    .fillMaxWidth()
             )
             ExposedDropdownMenu(expanded = petExpanded, onDismissRequest = { petExpanded = false }) {
                 pets.forEach { pet ->
@@ -209,7 +213,9 @@ private fun RoutineForm(
                 label = { Text("Interval (weeks)") },
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = intervalExpanded) },
-                modifier = Modifier.menuAnchor().fillMaxWidth()
+                modifier = Modifier
+                    .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true) // anchor text field for interval drop-down
+                    .fillMaxWidth()
             )
             ExposedDropdownMenu(expanded = intervalExpanded, onDismissRequest = { intervalExpanded = false }) {
                 intervalOptions.forEach { w ->

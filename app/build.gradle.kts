@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    id("androidx.room") version "2.6.1" // enables Room specific Gradle extensions
 }
 
 android {
@@ -77,16 +78,17 @@ dependencies {
     implementation(projects.core.design)
     implementation(projects.core.domain)
     implementation(projects.core.data)
-    // Local data persistence
+    // Local data persistence and Room setup
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
-    // Dependency injection
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+    // Dependency injection with Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.hilt:hilt-work:1.2.0")
-    ksp("androidx.hilt:hilt-compiler:1.2.0")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
     // Background work handling
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     // Extended icon set for pets etc.
@@ -103,4 +105,15 @@ dependencies {
     androidTestImplementation(libs.androidx.work.testing)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+// Configure Room to export schemas for version tracking
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+// Pass annotation processor arguments to Room via KSP
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
 }
