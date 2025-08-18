@@ -1,11 +1,17 @@
+// core/domain/build.gradle.kts
 plugins {
     kotlin("jvm")
 }
 
-kotlin {
-    jvmToolchain(17)
+java {
+    toolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
 }
 
 dependencies {
+    implementation("javax.inject:javax.inject:1") // for @Inject annotations
     implementation(libs.kotlinx.coroutines.core)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions.jvmTarget = "17"
 }
