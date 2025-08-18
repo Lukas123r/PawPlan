@@ -1,3 +1,5 @@
+// Opt in to Material3 experimental APIs like ModalBottomSheet.
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 package de.lshorizon.pawplan.ui.screen.home
 
 import androidx.compose.foundation.layout.Arrangement

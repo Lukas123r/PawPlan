@@ -1,3 +1,5 @@
+// Opt in to Material3 experimental APIs used by top app bars.
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 package de.lshorizon.pawplan.ui.screen.pets
 
 import androidx.compose.foundation.layout.Arrangement
