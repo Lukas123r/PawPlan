@@ -2,9 +2,11 @@ package de.lshorizon.pawplan.ui.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import de.lshorizon.pawplan.core.data.analytics.NoOpAnalytics
 import de.lshorizon.pawplan.core.data.repo.InMemoryEventLogRepository
 import de.lshorizon.pawplan.core.data.repo.InMemoryPetRepository
 import de.lshorizon.pawplan.core.data.repo.InMemoryRoutineRepository
+import de.lshorizon.pawplan.core.domain.analytics.AnalyticsEvent
 import de.lshorizon.pawplan.core.domain.model.Pet
 import de.lshorizon.pawplan.core.domain.model.Routine
 import de.lshorizon.pawplan.core.domain.usecase.ListDueRoutines
@@ -30,10 +32,11 @@ class HomeViewModel(
     private val eventRepo: InMemoryEventLogRepository = InMemoryEventLogRepository(),
 ) : ViewModel() {
 
-    private val listDueRoutines = ListDueRoutines(routineRepo)
+    private val analytics = NoOpAnalytics()
+    private val listDueRoutines = ListDueRoutines(routineRepo, analytics)
     private val listPets = ListPets(petRepo)
-    private val markRoutineDone = MarkRoutineDone(routineRepo, eventRepo)
-    private val snoozeRoutine = SnoozeRoutine(routineRepo, eventRepo)
+    private val markRoutineDone = MarkRoutineDone(routineRepo, eventRepo, analytics)
+    private val snoozeRoutine = SnoozeRoutine(routineRepo, eventRepo, analytics)
 
     private val _snackbar = MutableSharedFlow<String>()
     val snackbar = _snackbar.asSharedFlow()
@@ -44,6 +47,10 @@ class HomeViewModel(
     ) { routines, pets ->
         buildState(routines, pets)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState())
+
+    init {
+        analytics.track(AnalyticsEvent.FIRST_OPEN) // track app start
+    }
 
     private fun buildState(routines: List<Routine>, pets: List<Pet>): HomeState {
         val petMap = pets.associateBy { it.id }

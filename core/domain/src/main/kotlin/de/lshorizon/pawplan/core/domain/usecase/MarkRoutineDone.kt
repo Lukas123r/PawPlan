@@ -1,5 +1,7 @@
 package de.lshorizon.pawplan.core.domain.usecase
 
+import de.lshorizon.pawplan.core.domain.analytics.Analytics
+import de.lshorizon.pawplan.core.domain.analytics.AnalyticsEvent
 import de.lshorizon.pawplan.core.domain.model.EventLog
 import de.lshorizon.pawplan.core.domain.model.EventType
 import de.lshorizon.pawplan.core.domain.repo.EventLogRepository
@@ -13,11 +15,13 @@ import java.time.LocalDateTime
 class MarkRoutineDone(
     private val routineRepo: RoutineRepository,
     private val logRepo: EventLogRepository,
+    private val analytics: Analytics,
 ) {
     suspend operator fun invoke(id: Long, now: LocalDateTime) {
         require(!now.toLocalDate().isAfter(LocalDate.now())) { "Date must be today or earlier" }
         val routine = routineRepo.getRoutine(id) ?: return
         routineRepo.updateRoutine(routine.copy(lastDone = now, snoozedUntil = null))
         logRepo.addEvent(EventLog(routineId = id, timestamp = now, type = EventType.DONE))
+        analytics.track(AnalyticsEvent.REMINDER_ACTION_DONE) // track completion
     }
 }
