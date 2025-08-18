@@ -13,10 +13,12 @@ android {
     }
 
     compileOptions {
+        // Use Java 17 for this library module
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
+        // Align Kotlin with Java 17 bytecode
         jvmTarget = "17"
     }
     buildFeatures {
