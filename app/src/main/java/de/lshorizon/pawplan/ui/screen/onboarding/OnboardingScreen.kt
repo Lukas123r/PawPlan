@@ -1,6 +1,5 @@
 package de.lshorizon.pawplan.ui.screen.onboarding
 
-import android.app.Application
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -20,11 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import de.lshorizon.pawplan.data.onboarding.OnboardingRepository
-import kotlinx.coroutines.launch
+import androidx.hilt.navigation.compose.hiltViewModel
 
 /**
  * Simple onboarding screen with a few intro slides and a final action.
@@ -32,7 +27,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardingScreen(
-    viewModel: OnboardingViewModel = viewModel(),
+    viewModel: OnboardingViewModel = hiltViewModel(), // ViewModel provided by Hilt
     onFinished: () -> Unit = {},
 ) {
     val pagerState = rememberPagerState(pageCount = { 3 })
@@ -92,13 +87,3 @@ private fun OnboardingSlide(icon: ImageVector, title: String, text: String) {
     }
 }
 
-/**
- * ViewModel persisting completion flag to DataStore.
- */
-class OnboardingViewModel(
-    app: Application,
-    private val repo: OnboardingRepository = OnboardingRepository(app.applicationContext),
-) : AndroidViewModel(app) {
-    /** Save flag indicating onboarding was completed. */
-    fun setCompleted() = viewModelScope.launch { repo.setCompleted() }
-}

@@ -14,10 +14,13 @@ import de.lshorizon.pawplan.core.navigation.NavRoutes
 import kotlinx.coroutines.flow.first
 import de.lshorizon.pawplan.core.design.PawPlanTheme
 import de.lshorizon.pawplan.core.navigation.NavGraph
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Main activity launching the PawPlan navigation graph.
  */
+// Entry point for Hilt dependency injection
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

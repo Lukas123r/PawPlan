@@ -17,7 +17,8 @@ import de.lshorizon.pawplan.data.local.entity.RoutineEntity
  */
 @Database(
     entities = [PetEntity::class, RoutineEntity::class, EventLogEntity::class],
-    version = 1
+    version = 1,
+    exportSchema = true // export schema so migrations can be tracked
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
