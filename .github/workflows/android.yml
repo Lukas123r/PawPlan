@@ -24,22 +24,19 @@ jobs:
       - name: Set up Android SDK (cmdline-tools only)
         uses: android-actions/setup-android@v3
 
-      # Installiere SDK-Pakete manuell + akzeptiere Lizenzen (mit Retry & Fallback 34/33)
+      # Install SDK packages for API 36 with fallbacks
       - name: Install SDK packages (retry & fallback)
         shell: bash
         run: |
           set -euo pipefail
-          # Lizenzen akzeptieren (idempotent)
           yes | sdkmanager --licenses || true
-
-          # Mehrfach versuchen, falls Netzwerk zickt
           attempt() {
             sdkmanager --install \
               "platform-tools" \
+              "platforms;android-36" \
               "platforms;android-34" "build-tools;34.0.0" \
               "platforms;android-33" "build-tools;33.0.2"
           }
-
           if ! attempt; then
             echo "First attempt failed, waiting and retrying..."
             sleep 10
@@ -49,8 +46,7 @@ jobs:
               attempt
             fi
           fi
-
-          sdkmanager --list || true
+          sdkmanager --list | head -n 200 || true
 
       - name: Gradle cache
         uses: gradle/actions/setup-gradle@v3
