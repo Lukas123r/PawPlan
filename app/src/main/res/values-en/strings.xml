@@ -1,0 +1,18 @@
+<resources>
+    <!-- Onboarding translations -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_done">Get started</string>
+
+    <string name="onboarding_title_1">Welcome</string>
+    <string name="onboarding_body_1">All your pet routines in one place.</string>
+
+    <string name="onboarding_title_2">Notifications</string>
+    <string name="onboarding_body_2">Stay reminded – never forget anything again.</string>
+
+    <string name="onboarding_title_3">Templates</string>
+    <string name="onboarding_body_3">Create routines instantly with smart templates.</string>
+
+    <string name="onboarding_title_4">Sync</string>
+    <string name="onboarding_body_4">Share chores at home – everyone stays up to date.</string>
+</resources>

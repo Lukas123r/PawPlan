@@ -3,26 +3,25 @@
     <string name="app_name">PawPlan</string>
     <string name="done">Done</string>
     <string name="snooze_24h">Snooze 24h</string>
-    <string name="onboarding_welcome_title">Willkommen</string>
-    <string name="onboarding_welcome_text">Alle Routinen für deine Haustiere an einem Ort.</string>
-    <string name="onboarding_feature_notifications">Benachrichtigungen</string>
-    <string name="onboarding_feature_templates">Vorlagen</string>
-    <string name="onboarding_feature_history">Historie</string>
-    <string name="onboarding_notifications_title">Benachrichtigungen</string>
-    <string name="onboarding_notifications_text">Erlaube Benachrichtigungen, damit wir dich erinnern können.</string>
-    <string name="onboarding_privacy_title">Datenschutz</string>
-    <string name="onboarding_privacy_text">Du kannst deine Daten jederzeit in den Einstellungen verwalten.</string>
-    <string name="onboarding_allow_notifications">Benachrichtigungen erlauben</string>
+
+    <!-- Onboarding flow labels -->
     <string name="onboarding_skip">Überspringen</string>
     <string name="onboarding_next">Weiter</string>
-    <!-- Button label shown on the last onboarding page; %1$s is the visible text -->
-    <string name="onboarding_start">%1$s</string>
-    <string name="onboarding_back_cd">Zurück</string>
-    <string name="onboarding_next_cd">Weiter</string>
-    <string name="onboarding_skip_cd">Überspringen</string>
-    <!-- Content description for finishing onboarding; %1$s mirrors the button text -->
-    <string name="onboarding_finish_cd">%1$s</string>
-    <string name="onboarding_privacy_settings">Einstellungen öffnen</string>
-    <!-- Default label used in onboarding_start and onboarding_finish_cd; previously "{str}" and broke aapt -->
-    <string name="onboarding_start_label">Start</string>
+    <string name="onboarding_done">Los geht's</string>
+
+    <!-- Onboarding page 1: welcome -->
+    <string name="onboarding_title_1">Willkommen</string>
+    <string name="onboarding_body_1">Alle Routinen für deine Haustiere an einem Ort.</string>
+
+    <!-- Onboarding page 2: notifications -->
+    <string name="onboarding_title_2">Benachrichtigungen</string>
+    <string name="onboarding_body_2">Rechtzeitig erinnert werden – nie wieder etwas vergessen.</string>
+
+    <!-- Onboarding page 3: templates -->
+    <string name="onboarding_title_3">Vorlagen</string>
+    <string name="onboarding_body_3">Erstelle Routinen blitzschnell mit smarten Vorlagen.</string>
+
+    <!-- Onboarding page 4: sync -->
+    <string name="onboarding_title_4">Synchronisierung</string>
+    <string name="onboarding_body_4">Teile Aufgaben im Haushalt – alle bleiben auf dem Laufenden.</string>
 </resources>
