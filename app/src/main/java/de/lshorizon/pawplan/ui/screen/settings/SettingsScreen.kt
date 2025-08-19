@@ -4,8 +4,6 @@ package de.lshorizon.pawplan.ui.screen.settings
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.menuAnchor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -33,8 +31,7 @@ fun SettingsScreen() {
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = langExpanded) },
                 modifier = Modifier
-                    .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true) // anchor language field for dropdown
-                    .fillMaxWidth()
+                    .fillMaxWidth() // menuAnchor call removed; default anchor keeps dropdown attached
             )
             ExposedDropdownMenu(
                 expanded = langExpanded,
