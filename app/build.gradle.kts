@@ -12,12 +12,12 @@ plugins {
 android {
     // Application namespace
     namespace = "de.lshorizon.pawplan"
-    compileSdk = 36 // Build against Android 14 APIs
+    compileSdk = 34 // build against Android 14 (API 34)
 
     defaultConfig {
         applicationId = "de.lshorizon.pawplan"
         minSdk = 24
-        targetSdk = 36 // Target the latest Android version
+        targetSdk = 34 // target Android 14 APIs
         versionCode = 1
         versionName = "1.0"
 
@@ -103,6 +103,9 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.androidx.work.testing)
+    // Core instrumentation test libraries
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
