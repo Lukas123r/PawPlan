@@ -14,10 +14,12 @@
     <string name="onboarding_allow_notifications">Benachrichtigungen erlauben</string>
     <string name="onboarding_skip">Überspringen</string>
     <string name="onboarding_next">Weiter</string>
-    <string name="onboarding_start">Los geht's</string>
+    <!-- Button label shown on the last onboarding page -->
+    <string name="onboarding_start">Los geht&apos;s</string>
     <string name="onboarding_back_cd">Zurück</string>
     <string name="onboarding_next_cd">Weiter</string>
     <string name="onboarding_skip_cd">Überspringen</string>
-    <string name="onboarding_finish_cd">Los geht's</string>
+    <!-- Content description for finishing onboarding -->
+    <string name="onboarding_finish_cd">Los geht&apos;s</string>
     <string name="onboarding_privacy_settings">Einstellungen öffnen</string>
 </resources>

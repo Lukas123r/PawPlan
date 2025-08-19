@@ -25,6 +25,9 @@ dependencies {
   implementation(projects.core.domain)
   implementation(libs.kotlinx.coroutines.core)
 
+  // Preferences DataStore for simple key-value persistence
+  implementation(libs.androidx.datastore.preferences)
+
   implementation("com.google.dagger:hilt-android:2.52")
   kapt("com.google.dagger:hilt-android-compiler:2.52")
 
