@@ -1,27 +1,21 @@
 <resources>
-    <!-- Application string resources; placeholders use printf-style such as %1$s -->
+    <!-- General application strings -->
     <string name="app_name">PawPlan</string>
     <string name="done">Done</string>
     <string name="snooze_24h">Snooze 24h</string>
 
-    <!-- Onboarding flow labels -->
+    <!-- Onboarding actions -->
     <string name="onboarding_skip">Überspringen</string>
     <string name="onboarding_next">Weiter</string>
-    <string name="onboarding_done">Los geht's</string>
+    <string name="onboarding_done">Los geht’s</string>
 
-    <!-- Onboarding page 1: welcome -->
+    <!-- Onboarding pages -->
     <string name="onboarding_title_1">Willkommen</string>
     <string name="onboarding_body_1">Alle Routinen für deine Haustiere an einem Ort.</string>
-
-    <!-- Onboarding page 2: notifications -->
     <string name="onboarding_title_2">Benachrichtigungen</string>
     <string name="onboarding_body_2">Rechtzeitig erinnert werden – nie wieder etwas vergessen.</string>
-
-    <!-- Onboarding page 3: templates -->
     <string name="onboarding_title_3">Vorlagen</string>
     <string name="onboarding_body_3">Erstelle Routinen blitzschnell mit smarten Vorlagen.</string>
-
-    <!-- Onboarding page 4: sync -->
     <string name="onboarding_title_4">Synchronisierung</string>
     <string name="onboarding_body_4">Teile Aufgaben im Haushalt – alle bleiben auf dem Laufenden.</string>
 </resources>
