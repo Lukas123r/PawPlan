@@ -2,9 +2,10 @@ name: Android CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -32,7 +33,7 @@ jobs:
       - name: Build (assemble & unit tests)
         run: ./gradlew assembleDebug test --stacktrace
 
-      - name: Lint (optional, falls vorhanden)
+      - name: Lint (optional)
         run: ./gradlew lint || true
 
       - name: Upload debug APK
