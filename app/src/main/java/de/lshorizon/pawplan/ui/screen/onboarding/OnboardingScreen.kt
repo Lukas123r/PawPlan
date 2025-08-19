@@ -59,9 +59,9 @@ fun OnboardingScreen(
   LaunchedEffect(state.page) { pagerState.animateScrollToPage(state.page) }
   LaunchedEffect(pagerState.currentPage) { vm.setPage(pagerState.currentPage) }
 
-  val context = LocalContext.current
-  // Localized label injected into formatted onboarding strings
-  val startLabel = stringResource(R.string.onboarding_start_label)
+    val context = LocalContext.current
+    // Base label (e.g., "Los geht's") inserted into formatted onboarding strings
+    val startLabel = stringResource(R.string.onboarding_start_label)
 
   Column(modifier = Modifier.fillMaxSize()) {
     Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {

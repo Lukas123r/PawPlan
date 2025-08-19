@@ -1,4 +1,5 @@
 <resources>
+    <!-- Application string resources; placeholders use printf-style such as %1$s -->
     <string name="app_name">PawPlan</string>
     <string name="done">Done</string>
     <string name="snooze_24h">Snooze 24h</string>
@@ -22,6 +23,6 @@
     <!-- Content description for finishing onboarding; %1$s mirrors the button text -->
     <string name="onboarding_finish_cd">%1$s</string>
     <string name="onboarding_privacy_settings">Einstellungen öffnen</string>
-    <!-- Default label passed to onboarding_start and onboarding_finish_cd -->
-    <string name="onboarding_start_label">Los geht&apos;s</string>
+    <!-- Default label passed to onboarding_start and onboarding_finish_cd; ensures aapt-compatible text -->
+    <string name="onboarding_start_label">Los geht's</string>
 </resources>
