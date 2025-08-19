@@ -2,4 +2,22 @@
     <string name="app_name">PawPlan</string>
     <string name="done">Done</string>
     <string name="snooze_24h">Snooze 24h</string>
+    <string name="onboarding_welcome_title">Willkommen</string>
+    <string name="onboarding_welcome_text">Alle Routinen für deine Haustiere an einem Ort.</string>
+    <string name="onboarding_feature_notifications">Benachrichtigungen</string>
+    <string name="onboarding_feature_templates">Vorlagen</string>
+    <string name="onboarding_feature_history">Historie</string>
+    <string name="onboarding_notifications_title">Benachrichtigungen</string>
+    <string name="onboarding_notifications_text">Erlaube Benachrichtigungen, damit wir dich erinnern können.</string>
+    <string name="onboarding_privacy_title">Datenschutz</string>
+    <string name="onboarding_privacy_text">Du kannst deine Daten jederzeit in den Einstellungen verwalten.</string>
+    <string name="onboarding_allow_notifications">Benachrichtigungen erlauben</string>
+    <string name="onboarding_skip">Überspringen</string>
+    <string name="onboarding_next">Weiter</string>
+    <string name="onboarding_start">Los geht's</string>
+    <string name="onboarding_back_cd">Zurück</string>
+    <string name="onboarding_next_cd">Weiter</string>
+    <string name="onboarding_skip_cd">Überspringen</string>
+    <string name="onboarding_finish_cd">Los geht's</string>
+    <string name="onboarding_privacy_settings">Einstellungen öffnen</string>
 </resources>

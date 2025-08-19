@@ -45,8 +45,8 @@ fun NavGraph(navController: NavHostController = rememberNavController(), startDe
         composable(NavRoutes.Settings.route) { SettingsScreen() }
         composable(NavRoutes.Onboarding.route) {
             OnboardingScreen(onFinished = {
-                navController.navigate(NavRoutes.AddPet.route) {
-                    popUpTo(NavRoutes.Onboarding.route) { inclusive = true }
+                navController.navigate(NavRoutes.Home.route) {
+                    popUpTo(0)
                 }
             })
         }

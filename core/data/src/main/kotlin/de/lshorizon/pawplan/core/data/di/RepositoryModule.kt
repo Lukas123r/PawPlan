@@ -7,6 +7,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import de.lshorizon.pawplan.core.domain.repo.RoutineRepository
 import de.lshorizon.pawplan.core.data.repo.RoutineRepositoryImpl
+import de.lshorizon.pawplan.core.data.onboarding.OnboardingRepository
+import de.lshorizon.pawplan.core.data.onboarding.OnboardingRepositoryImpl
 import javax.inject.Singleton
 
 // Hilt module that provides repository implementations
@@ -18,4 +20,10 @@ abstract class RepositoryModule {
   abstract fun bindRoutineRepository(
     impl: RoutineRepositoryImpl
   ): RoutineRepository
+
+  @Binds
+  @Singleton
+  abstract fun bindOnboardingRepository(
+    impl: OnboardingRepositoryImpl
+  ): OnboardingRepository
 }
