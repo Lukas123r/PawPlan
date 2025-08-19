@@ -114,6 +114,5 @@ room {
 
 // Pass annotation processor arguments to Room via KSP
 ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
     arg("room.incremental", "true")
 }
