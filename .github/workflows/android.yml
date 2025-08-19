@@ -10,6 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
@@ -21,8 +22,15 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      # Android SDK + Tools (compileSdk 34 -> build-tools 34)
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: |
+            platforms;android-34
+            build-tools;34.0.0
+            platform-tools
+            cmdline-tools;latest
 
       - name: Gradle cache
         uses: gradle/actions/setup-gradle@v3
@@ -30,15 +38,67 @@ jobs:
       - name: Make Gradle executable
         run: chmod +x ./gradlew
 
+      - name: Print Gradle/AGP versions
+        run: ./gradlew --version
+
+      # ---------- Build & Unit-Tests ----------
       - name: Build (assemble & unit tests)
-        run: ./gradlew assembleDebug test --stacktrace
+        run: |
+          set -o pipefail
+          ./gradlew assembleDebug test --stacktrace --info --console=plain | tee gradle.log
 
-      - name: Lint (optional)
-        run: ./gradlew lint || true
+      - name: Error summary (grep)
+        if: failure()
+        run: |
+          echo "---- Error summary ----"
+          grep -n -i -E "(^e: | error: | FAILURE: | What went wrong|> Task .* FAILED|Caused by: )" gradle.log | tail -n 120 || true
 
+      # ---------- UI-Tests auf Emulator ----------
+      # Startet einen Android-Emulator (API 30) und führt connected UI-Tests aus.
+      - name: Run UI tests on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: default
+          arch: x86_64
+          profile: pixel_5
+          ram-size: 4096M
+          emulator-boot-timeout: 900
+          disable-animations: true
+          script: |
+            adb devices
+            # baut automatisch die androidTest-APK und führt die instrumentierten Tests aus
+            ./gradlew :app:connectedDebugAndroidTest --stacktrace --info --console=plain
+
+      # ---------- Artefakte: APK, Test-Reports & Screenshots ----------
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug.apk
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: warn
+
+      - name: Upload connected test reports (HTML/XML)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: connected-android-test-reports
+          path: |
+            app/build/reports/androidTests/connected/**
+            app/build/outputs/androidTest-results/connected/**
+          if-no-files-found: warn
+
+      # Sammelt beliebige Screenshots, falls deine UI-Tests welche erzeugen.
+      # Lege in deinen Tests z.B. unter app/src/androidTest/... Screenshots ab:
+      #   context.getExternalFilesDir(null)/"screenshots"/...  oder
+      #   app/build/reports/screenshots/...
+      - name: Upload UI screenshots (if any)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-screenshots
+          path: |
+            **/screenshots/**/*.png
+            app/build/reports/screenshots/**/*.png
+            app/build/outputs/managed_device_android_test_additional_output/**/*.png
           if-no-files-found: warn
