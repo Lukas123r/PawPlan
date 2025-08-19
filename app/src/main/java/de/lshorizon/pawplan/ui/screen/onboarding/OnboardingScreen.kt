@@ -60,7 +60,7 @@ fun OnboardingScreen(
   LaunchedEffect(pagerState.currentPage) { vm.setPage(pagerState.currentPage) }
 
     val context = LocalContext.current
-    // Base label (e.g., "Los geht's") inserted into formatted onboarding strings
+    // Static start button text after replacing invalid "{str}" placeholder
     val startLabel = stringResource(R.string.onboarding_start_label)
 
   Column(modifier = Modifier.fillMaxSize()) {
