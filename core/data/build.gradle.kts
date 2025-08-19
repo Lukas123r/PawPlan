@@ -27,6 +27,8 @@ dependencies {
 
   // Preferences DataStore for simple key-value persistence
   implementation(libs.androidx.datastore.preferences)
+  // Core DataStore library for type-safe storage
+  implementation(libs.androidx.datastore.core)
 
   implementation("com.google.dagger:hilt-android:2.52")
   kapt("com.google.dagger:hilt-android-compiler:2.52")
