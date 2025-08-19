@@ -9,12 +9,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import de.lshorizon.pawplan.data.onboarding.OnboardingRepository
+import de.lshorizon.pawplan.core.data.onboarding.OnboardingRepository
 import de.lshorizon.pawplan.core.navigation.NavRoutes
-import kotlinx.coroutines.flow.first
 import de.lshorizon.pawplan.core.design.PawPlanTheme
 import de.lshorizon.pawplan.core.navigation.NavGraph
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * Main activity launching the PawPlan navigation graph.
@@ -22,15 +22,15 @@ import dagger.hilt.android.AndroidEntryPoint
 // Entry point for Hilt dependency injection
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var onboardingRepository: OnboardingRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             PawPlanTheme {
-                val repo = remember { OnboardingRepository(applicationContext) }
                 var start by remember { mutableStateOf<String?>(null) }
                 LaunchedEffect(Unit) {
-                    val seen = repo.isOnboardingComplete.first()
+                    val seen = onboardingRepository.isCompleted()
                     start = if (seen) NavRoutes.Home.route else NavRoutes.Onboarding.route
                 }
                 start?.let { NavGraph(startDestination = it) }
