@@ -3,7 +3,7 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <!-- Simple square placeholder for onboarding images -->
+    <!-- Placeholder icon for onboarding templates page -->
     <path
         android:fillColor="#FF000000"
         android:pathData="M0,0h24v24h-24z"/>

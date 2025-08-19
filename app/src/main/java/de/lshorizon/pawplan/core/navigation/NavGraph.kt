@@ -44,11 +44,7 @@ fun NavGraph(navController: NavHostController = rememberNavController(), startDe
         }
         composable(NavRoutes.Settings.route) { SettingsScreen() }
         composable(NavRoutes.Onboarding.route) {
-            OnboardingScreen(onFinished = {
-                navController.navigate(NavRoutes.Home.route) {
-                    popUpTo(0)
-                }
-            })
+            OnboardingScreen(navController)
         }
     }
 }

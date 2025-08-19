@@ -9,7 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import de.lshorizon.pawplan.core.data.onboarding.OnboardingRepository
+import de.lshorizon.pawplan.core.data.prefs.PrefsRepository
 import de.lshorizon.pawplan.core.navigation.NavRoutes
 import de.lshorizon.pawplan.core.design.PawPlanTheme
 import de.lshorizon.pawplan.core.navigation.NavGraph
@@ -22,7 +22,7 @@ import javax.inject.Inject
 // Entry point for Hilt dependency injection
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject lateinit var onboardingRepository: OnboardingRepository
+    @Inject lateinit var prefsRepository: PrefsRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
             PawPlanTheme {
                 var start by remember { mutableStateOf<String?>(null) }
                 LaunchedEffect(Unit) {
-                    val seen = onboardingRepository.isCompleted()
+                    val seen = prefsRepository.hasSeenOnboarding()
                     start = if (seen) NavRoutes.Home.route else NavRoutes.Onboarding.route
                 }
                 start?.let { NavGraph(startDestination = it) }
