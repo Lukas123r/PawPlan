@@ -60,6 +60,8 @@ fun OnboardingScreen(
   LaunchedEffect(pagerState.currentPage) { vm.setPage(pagerState.currentPage) }
 
   val context = LocalContext.current
+  // Localized label injected into formatted onboarding strings
+  val startLabel = stringResource(R.string.onboarding_start_label)
 
   Column(modifier = Modifier.fillMaxSize()) {
     Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
@@ -117,12 +119,22 @@ fun OnboardingScreen(
         .fillMaxWidth()
         .padding(16.dp)
         .semantics {
-          contentDescription = stringResource(
-            if (state.isLast) R.string.onboarding_finish_cd else R.string.onboarding_next_cd
-          )
+          contentDescription = if (state.isLast) {
+            // Describe final action using the dynamic label
+            stringResource(R.string.onboarding_finish_cd, startLabel)
+          } else {
+            stringResource(R.string.onboarding_next_cd)
+          }
         }
     ) {
-      Text(if (state.isLast) stringResource(R.string.onboarding_start) else stringResource(R.string.onboarding_next))
+      Text(
+        if (state.isLast) {
+          // Show formatted text when finishing onboarding
+          stringResource(R.string.onboarding_start, startLabel)
+        } else {
+          stringResource(R.string.onboarding_next)
+        }
+      )
     }
   }
 }
