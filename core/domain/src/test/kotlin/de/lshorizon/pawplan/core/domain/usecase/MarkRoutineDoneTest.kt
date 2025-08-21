@@ -1,12 +1,12 @@
 package de.lshorizon.pawplan.core.domain.usecase
 
-import de.lshorizon.pawplan.core.data.analytics.NoOpAnalytics
-import de.lshorizon.pawplan.core.data.repo.InMemoryEventLogRepository
-import de.lshorizon.pawplan.core.data.repo.InMemoryRoutineRepository
+import de.lshorizon.pawplan.core.domain.fakes.InMemoryEventLogRepository
+import de.lshorizon.pawplan.core.domain.fakes.InMemoryRoutineRepository
+import de.lshorizon.pawplan.core.domain.fakes.NoOpAnalytics
 import de.lshorizon.pawplan.core.domain.model.Routine
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlinx.coroutines.runBlocking
+import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.test.runTest
+import org.junit.Test
 import java.time.LocalDateTime
 
 /**
@@ -14,7 +14,7 @@ import java.time.LocalDateTime
  */
 class MarkRoutineDoneTest {
     @Test
-    fun `next due resets after completion`() = runBlocking {
+    fun `next due resets after completion`() = runTest {
         val routineRepo = InMemoryRoutineRepository()
         val eventRepo = InMemoryEventLogRepository()
         val useCase = MarkRoutineDone(routineRepo, eventRepo, NoOpAnalytics())
@@ -25,10 +25,10 @@ class MarkRoutineDoneTest {
         useCase(routine.id, now)
         val updated = routineRepo.getRoutine(routine.id)!!
         // lastDone should be updated and snooze cleared
-        assertEquals(now, updated.lastDone)
-        assertEquals(null, updated.snoozedUntil)
+        assertThat(updated.lastDone).isEqualTo(now)
+        assertThat(updated.snoozedUntil).isNull()
         // next due is lastDone plus interval
         val nextDue = updated.lastDone!!.plusDays(updated.intervalDays.toLong())
-        assertEquals(now.plusDays(2), nextDue)
+        assertThat(nextDue).isEqualTo(now.plusDays(2))
     }
 }
