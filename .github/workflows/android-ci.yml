@@ -36,13 +36,13 @@ jobs:
         run: yes | sdkmanager --licenses
 
       - name: Build (assemble)
-        run: ./gradlew :app:assembleDebug --stacktrace
+        run: ./gradlew :app:assembleDebug --stacktrace # compile the app
 
       - name: Unit tests
-        run: ./gradlew testDebug --stacktrace
+        run: ./gradlew testDebug --stacktrace # execute unit tests
 
       - name: Paparazzi record
-        run: ./gradlew recordPaparazziDebug --stacktrace
+        run: ./gradlew recordPaparazziDebug --stacktrace # generate screenshots
 
       - name: Upload unit test reports
         uses: actions/upload-artifact@v4
