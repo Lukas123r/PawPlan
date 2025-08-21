@@ -1,9 +1,11 @@
-# CI pipeline ensuring reliable Android SDK setup and tests
+# GitHub Actions workflow building and testing the project with a manual Android SDK install
 name: Android CI
 
 on:
-  push: { branches: ["**"] }
-  pull_request: { branches: ["**"] }
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
 
 jobs:
   build-and-test:
@@ -14,37 +16,25 @@ jobs:
       JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
 
-      - uses: gradle/actions/setup-gradle@v3
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
 
-      - name: Install Android cmdline-tools
-        run: |
-          sudo mkdir -p $ANDROID_SDK_ROOT
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-12266719_latest.zip -O /tmp/clt.zip
-          sudo unzip -o -q /tmp/clt.zip -d /usr/local/lib/android/
-          sudo mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools
-          sudo rm -rf ${ANDROID_SDK_ROOT}/cmdline-tools/16.0 || true
-          sudo mv /usr/local/lib/android/cmdline-tools ${ANDROID_SDK_ROOT}/cmdline-tools/16.0
-          sudo ln -sf ${ANDROID_SDK_ROOT}/cmdline-tools/16.0 ${ANDROID_SDK_ROOT}/cmdline-tools/latest
-          yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses
+      - name: Install Android SDK (manual & robust)
+        run: .github/scripts/install-android-sdk.sh
 
-      - name: Install SDK packages
-        run: |
-          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-          ${ANDROID_SDK_ROOT}/platform-tools/adb --version
+      - name: Write local.properties with SDK path
+        run: .github/scripts/write-local-properties.sh
 
-      - name: Write local.properties
-        run: |
-          echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
-          cat local.properties
-
-      - name: Grant Gradle wrapper
+      - name: Grant Gradle wrapper execution
         run: chmod +x ./gradlew
 
       - name: Assemble
