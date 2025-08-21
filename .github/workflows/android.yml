@@ -32,10 +32,13 @@ jobs:
           yes | sdkmanager --licenses || true
           attempt() {
             sdkmanager --install \
-              "platform-tools" \
               "platforms;android-36" \
-              "platforms;android-34" "build-tools;34.0.0" \
-              "platforms;android-33" "build-tools;33.0.2"
+              "platforms;android-34" \
+              "platforms;android-33" \
+              "build-tools;34.0.0" \
+              "build-tools;33.0.2" \
+              "platform-tools" \
+              "cmdline-tools;latest"
           }
           if ! attempt; then
             echo "First attempt failed, waiting and retrying..."
@@ -57,11 +60,11 @@ jobs:
       - name: Print Gradle/AGP versions
         run: ./gradlew --version
 
-      - name: Build (assemble only)
+      - name: Build and unit tests
         run: |
           set -o pipefail
-          # Assemble only to skip flaky unit tests
-          ./gradlew assembleDebug --stacktrace --info --console=plain | tee gradle.log
+          # Assemble debug build and run unit tests, log stored in gradle.log
+          ./gradlew assembleDebug test --stacktrace --info --console=plain | tee gradle.log
 
       - name: Error summary (grep)
         if: failure()
