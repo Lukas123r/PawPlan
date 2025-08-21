@@ -1,13 +1,12 @@
 plugins {
     // Application and Kotlin plugins with Compose, Hilt and KSP support
-    id("com.android.library")
+    id("com.android.application")
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     id("androidx.room") version "2.6.1" // enables Room specific Gradle extensions
-    id("app.cash.paparazzi") version "1.3.0" // snapshot testing without an emulator
+    id("app.cash.paparazzi") version "1.3.5" // snapshot testing without an emulator
 }
 
 android {
@@ -16,6 +15,7 @@ android {
     compileSdk = 36 // Build against Android 15 (API 36) for newer AndroidX
 
     defaultConfig {
+        applicationId = "de.lshorizon.pawplan" // unique app identifier
         minSdk = 24
         targetSdk = 36 // Target Android 15 APIs for compatibility
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -48,6 +48,8 @@ android {
     testOptions {
         // Disable animations for stable UI tests
         animationsDisabled = true
+        // Include Android resources for unit tests and Paparazzi
+        unitTests.isIncludeAndroidResources = true
     }
     packaging {
         // Exclude license files required by Compose testing
@@ -81,10 +83,10 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
     // Dependency injection with Hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.hilt:hilt-work:1.2.0")
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
     // Background work handling
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     // Extended icon set for pets etc.

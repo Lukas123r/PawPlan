@@ -3,8 +3,8 @@
 plugins {
   id("com.android.library")
   kotlin("android")
-  kotlin("kapt")
-  id("com.google.dagger.hilt.android")
+  alias(libs.plugins.ksp) // KSP handles annotation processing
+  id("com.google.dagger.hilt.android") // enables Hilt code generation
 }
 
 android {
@@ -30,8 +30,9 @@ dependencies {
   // Core DataStore library for type-safe storage
   implementation(libs.androidx.datastore.core)
 
-  implementation("com.google.dagger:hilt-android:2.52")
-  kapt("com.google.dagger:hilt-android-compiler:2.52")
+  // Dependency injection with Hilt
+  implementation(libs.hilt.android)
+  ksp(libs.hilt.compiler)
 
   // Library module for data layer
 }
