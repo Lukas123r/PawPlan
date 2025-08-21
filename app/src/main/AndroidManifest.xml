@@ -5,6 +5,7 @@
     <!-- Permission required for posting notifications on Android 13+ -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Custom application integrates Hilt and WorkManager -->
     <application
         android:name=".PawPlanApp"
         android:allowBackup="true"

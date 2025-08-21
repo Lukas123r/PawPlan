@@ -34,6 +34,7 @@ private fun AppPreviewContent() {
     PawPlanTheme {
         OnboardingScreen(
             navController = rememberNavController(),
+            // Create ViewModel with fake repository to avoid DI setup
             vm = OnboardingViewModel(FakePrefsRepository())
         )
     }
