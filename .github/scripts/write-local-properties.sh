@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Script to generate local.properties so Gradle can find the Android SDK
-set -euxo pipefail
-SDK="${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}"
-# Write into the repository ROOT (where settings.gradle lives)
-echo "sdk.dir=${SDK}" > "${GITHUB_WORKSPACE}/local.properties"
-echo "Wrote local.properties:"
-cat "${GITHUB_WORKSPACE}/local.properties"
+# Writes Android SDK path to local.properties for Gradle
+set -euo pipefail
+ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+SDK_PATH="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+echo "sdk.dir=${SDK_PATH}" > "${ROOT_DIR}/local.properties"
+echo "local.properties written with sdk.dir=${SDK_PATH}"
+
