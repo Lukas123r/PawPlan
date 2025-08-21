@@ -1,4 +1,3 @@
-# GitHub Actions workflow building and testing the project with a manual Android SDK install
 name: Android CI
 
 on:
@@ -30,44 +29,71 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v3
 
-      # MANUAL SDK install (no interactive prompts, no newline bug)
+      # -------- Detect project directory (holds settings.gradle / settings.gradle.kts)
+      - name: Detect Gradle project dir
+        id: pd
+        shell: bash
+        run: |
+          set -euxo pipefail
+          ROOT="$GITHUB_WORKSPACE"
+          CANDIDATE="$ROOT"
+          if [ ! -f "$ROOT/settings.gradle" ] && [ ! -f "$ROOT/settings.gradle.kts" ]; then
+            # search max depth 2 to avoid monorepo surprises
+            FOUND=$(find "$ROOT" -maxdepth 2 -type f \( -name "settings.gradle" -o -name "settings.gradle.kts" \) -printf "%h\n" | head -n1 || true)
+            if [ -n "$FOUND" ]; then
+              CANDIDATE="$FOUND"
+            fi
+          fi
+          echo "PROJECT_DIR=$CANDIDATE" >> $GITHUB_ENV
+          echo "Detected PROJECT_DIR=$CANDIDATE"
+
+      # -------- Install Android SDK manually (no interactive prompts)
       - name: Install Android SDK (manual)
-        run: .github/scripts/install-android-sdk.sh
-
-      # Persist env for following steps and write local.properties at repo root
-      - name: Export ANDROID_* env for all steps
+        shell: bash
         run: |
-          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
-          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          set -euxo pipefail
+          SDK="$ANDROID_SDK_ROOT"
+          mkdir -p "$SDK"
+          ZIP=/tmp/clt.zip
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-12266719_latest.zip -O "$ZIP"
+          unzip -o -q "$ZIP" -d /usr/local/lib/android/
+          mkdir -p "$SDK/cmdline-tools"
+          rm -rf "$SDK/cmdline-tools/16.0" || true
+          mv /usr/local/lib/android/cmdline-tools "$SDK/cmdline-tools/16.0"
+          ln -sfn "$SDK/cmdline-tools/16.0" "$SDK/cmdline-tools/latest"
+          yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
+          "$SDK/cmdline-tools/latest/bin/sdkmanager" --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          "$SDK/platform-tools/adb" version
 
-      - name: Write local.properties (repo root)
-        run: .github/scripts/write-local-properties.sh
-
-      - name: Show SDK + repo state
+      # -------- Write local.properties into the detected PROJECT_DIR
+      - name: Write local.properties
+        shell: bash
         run: |
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          ls -la
-          cat local.properties
+          set -euxo pipefail
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$PROJECT_DIR/local.properties"
+          cat "$PROJECT_DIR/local.properties"
 
       - name: Make gradlew executable
+        working-directory: ${{ env.PROJECT_DIR }}
         run: chmod +x ./gradlew
 
-      # Warm caches so subsequent tasks don’t stall
       - name: Gradle warmup
+        working-directory: ${{ env.PROJECT_DIR }}
         run: ./gradlew -q help
 
       - name: Assemble :app
+        working-directory: ${{ env.PROJECT_DIR }}
         run: ./gradlew :app:assembleDebug --stacktrace --no-daemon --console=plain
 
-      # Run unit tests; do not block later steps; print full logs
-      - name: Unit tests (verbose, non-blocking)
+      - name: Unit tests (verbose, non-fatal)
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           set +e
           ./gradlew :app:testDebugUnitTest --stacktrace --info --no-daemon --console=plain
-          echo "::notice::Unit tests finished (check artifacts)."
           exit 0
 
       - name: Paparazzi record (verbose)
+        working-directory: ${{ env.PROJECT_DIR }}
         run: ./gradlew :app:recordPaparazziDebug --stacktrace --info --no-daemon --console=plain
 
       - name: Upload unit test reports
@@ -76,8 +102,8 @@ jobs:
         with:
           name: unit-test-reports
           path: |
-            **/build/reports/tests/testDebugUnitTest/**
-            **/build/test-results/testDebugUnitTest/**
+            ${{ env.PROJECT_DIR }}/**/build/reports/tests/testDebugUnitTest/**
+            ${{ env.PROJECT_DIR }}/**/build/test-results/testDebugUnitTest/**
 
       - name: Upload Paparazzi screenshots
         if: always()
@@ -85,5 +111,5 @@ jobs:
         with:
           name: ui-screenshots-paparazzi
           path: |
-            **/out/paparazzi/**
-            **/build/paparazzi/**
+            ${{ env.PROJECT_DIR }}/**/out/paparazzi/**
+            ${{ env.PROJECT_DIR }}/**/build/paparazzi/**
