@@ -1,139 +1,107 @@
+# Workflow to build and test the Android project in CI
 name: Android CI
 
 on:
   push:
     branches: [ "**" ]
   pull_request:
-    branches: [ "**" ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+
     env:
-      # Will be set once we detect the gradle root
-      GRADLEW_DIR: .
-      ANDROID_HOME: /usr/local/lib/android/sdk
-      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
-      # Speed up Gradle & make logs plain
-      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx2g -XX:+HeapDumpOnOutOfMemoryError" -Dkotlin.daemon.jvm.options="-Xmx1g"
+      JAVA_TOOL_OPTIONS: -Xmx2g
+      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx2g -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8"
+      # Will be exported after setup-android as well:
+      ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
 
-      - name: Detect Gradle wrapper directory
-        id: findroot
-        shell: bash
-        run: |
-          if [ -f "gradlew" ]; then
-            echo "GRADLEW_DIR=." >> $GITHUB_ENV
-          else
-            WRAP=$(git ls-files | grep -E '/gradlew$' | head -n1 || true)
-            if [ -z "$WRAP" ]; then
-              echo "Gradle wrapper not found"; exit 1
-            fi
-            DIR=$(dirname "$WRAP")
-            echo "GRADLEW_DIR=$DIR" >> $GITHUB_ENV
-          fi
-          echo "Gradle at: $GRADLEW_DIR"
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
 
-      - name: Cache Gradle
-        uses: actions/cache@v4
+      # Install Android SDK packages. IMPORTANT: use YAML block scalar (|) to keep line breaks.
+      - name: Install Android SDK packages
+        id: setup-android
+        uses: android-actions/setup-android@v3
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties') }}-${{ hashFiles('**/*.gradle*','**/gradle.properties','**/settings.gradle*') }}
-          restore-keys: |
-            gradle-${{ runner.os }}-
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: true
+          # Install both 33.0.2 (primary) and 34.0.0 (optional) plus platforms and tools.
+          packages: |
+            platform-tools
+            platforms;android-33
+            build-tools;33.0.2
+            platforms;android-34
+            build-tools;34.0.0
 
-      # ---------- ANDROID SDK (manual, deterministic) ----------
-      - name: Install Android SDK commandline-tools (latest 12.x)
+      # Some runners occasionally fail to fetch packages on the first try. Retry with sdkmanager directly.
+      - name: Retry missing SDK packages (best-effort)
+        if: failure()
+        shell: bash
+        run: |
+          set -euxo pipefail
+          export ANDROID_SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          yes | "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+          yes | "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --install \
+            "platform-tools" "platforms;android-33" "build-tools;33.0.2" || true
+
+      # Write local.properties so Gradle always finds the SDK
+      - name: Write local.properties
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$ANDROID_HOME"/cmdline-tools
-          # Use a fixed, working revision to avoid preview regressions
-          URL="https://dl.google.com/android/repository/commandlinetools-linux-12266719_latest.zip"
-          curl -sSL "$URL" -o /tmp/cmdtools.zip
-          unzip -o -q /tmp/cmdtools.zip -d /tmp/cmdtools
-          # Place under cmdline-tools/16.0 so sdkmanager path is stable
-          rm -rf "$ANDROID_HOME/cmdline-tools/16.0"
-          mkdir -p "$ANDROID_HOME/cmdline-tools/16.0"
-          mv /tmp/cmdtools/* "$ANDROID_HOME/cmdline-tools/16.0/"
-          echo "$ANDROID_HOME/cmdline-tools/16.0/bin" >> $GITHUB_PATH
-
-      - name: Accept SDK licenses non-interactively
-        shell: bash
-        run: yes | "$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager" --licenses > /dev/null
-
-      - name: Install required SDK packages
-        shell: bash
-        run: |
-          set -euo pipefail
-          PKGS=(
-            "platform-tools"
-            "platforms;android-34"
-            "build-tools;34.0.0"
-          )
-          "$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager" "${PKGS[@]}"
-          "$ANDROID_HOME/platform-tools/adb" version
-
-      - name: Write local.properties pointing to SDK
-        working-directory: ${{ env.GRADLEW_DIR }}
-        shell: bash
-        run: |
-          printf "sdk.dir=%s\n" "$ANDROID_HOME" > local.properties
+          SDK_PATH="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "sdk.dir=${SDK_PATH}" > "$GITHUB_WORKSPACE/local.properties"
+          echo "Wrote local.properties with sdk.dir=${SDK_PATH}"
           cat local.properties
 
-      # ---------- BUILD & TEST ----------
-      - name: Gradle help (smoke)
-        working-directory: ${{ env.GRADLEW_DIR }}
+      - name: Verify sdkmanager + platform-tools
         shell: bash
+        run: |
+          set -euxo pipefail
+          "${ANDROID_HOME}/platform-tools/adb" version || true
+          "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --list | head -n 100 || true
+
+      - name: Gradle help (sanity)
         run: ./gradlew -q help
 
+      - name: Assemble Debug
+        run: ./gradlew :app:assembleDebug --stacktrace --no-daemon --console=plain
+
+      # Run pure JVM unit tests (no emulator). Adjust the task name if your module differs.
       - name: Unit tests
-        working-directory: ${{ env.GRADLEW_DIR }}
-        shell: bash
-        run: |
-          set -e
-          # Try :app: first, else fall back to global task
-          if ./gradlew -q projects | grep -qE "Project ':[Aa]pp'"; then
-            ./gradlew :app:testDebugUnitTest --stacktrace --info --console=plain
-          else
-            ./gradlew testDebugUnitTest --stacktrace --info --console=plain
-          fi
+        run: ./gradlew :app:testDebugUnitTest --stacktrace --no-daemon --console=plain
 
-      - name: Paparazzi record (if available)
-        working-directory: ${{ env.GRADLEW_DIR }}
-        shell: bash
-        run: |
-          set -e
-          if ./gradlew tasks | grep -q "recordPaparazziDebug"; then
-            ./gradlew recordPaparazziDebug --stacktrace --info --console=plain
-          else
-            echo "Paparazzi task not present; skipping."
-          fi
+      # Paparazzi record (Compose screenshots) if Paparazzi is present.
+      - name: Paparazzi record
+        run: ./gradlew recordPaparazziDebug --stacktrace --no-daemon --console=plain
 
-      # ---------- ARTIFACTS ----------
-      - name: Collect test reports
-        if: always()
-        shell: bash
-        working-directory: ${{ env.GRADLEW_DIR }}
-        run: |
-          mkdir -p ci-artifacts
-          find . -type d -path "*/build/reports/tests" -exec bash -c 'for d; do dest="ci-artifacts/$(echo "$d" | sed "s#^\./##;s#/#__#g")"; mkdir -p "$dest"; cp -r "$d"/* "$dest"/; done' bash {} +
-          find . -type d -path "*/build/reports/paparazzi" -exec bash -c 'for d; do dest="ci-artifacts/$(echo "$d" | sed "s#^\./##;s#/#__#g")"; mkdir -p "$dest"; cp -r "$d"/* "$dest"/; done' bash {} +
-
-      - name: Upload artifacts
+      # Collect reports and Paparazzi images for inspection
+      - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: android-reports
-          path: ${{ env.GRADLEW_DIR }}/ci-artifacts
-          if-no-files-found: warn
+          name: test-reports
+          path: |
+            **/build/test-results/**
+            **/build/reports/tests/**
+
+      - name: Upload Paparazzi screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paparazzi-snapshots
+          path: |
+            **/build/paparazzi/**
+
