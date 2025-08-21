@@ -5,8 +5,9 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.kapt) // enable kapt for Hilt testing
     id("androidx.room") version "2.6.1" // enables Room specific Gradle extensions
-    id("app.cash.paparazzi") version "1.3.5" // snapshot testing without an emulator
+    id("app.cash.paparazzi") version "1.3.2" // snapshot testing without an emulator
 }
 
 android {
@@ -48,8 +49,23 @@ android {
     testOptions {
         // Disable animations for stable UI tests
         animationsDisabled = true
-        // Include Android resources for unit tests and Paparazzi
+        // Make Android resources visible to JVM tests (Robolectric & Paparazzi)
         unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            // Tweak JVM for stable, verbose testing on CI
+            it.jvmArgs(
+                "-XX:+UseParallelGC",
+                "-Xmx2g",
+                "-Dfile.encoding=UTF-8",
+            )
+            it.testLogging {
+                events("failed", "skipped", "standardError")
+                showCauses = true
+                showExceptions = true
+                showStackTraces = true
+                exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+            }
+        }
     }
     packaging {
         // Exclude license files required by Compose testing
@@ -95,7 +111,14 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.2")
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)
-    testImplementation(libs.androidx.junit) // AndroidX JUnit4 runner for screenshot tests
+    // Robolectric for tests that reference Android SDK APIs
+    testImplementation("org.robolectric:robolectric:4.10.3")
+    // Hilt testing support
+    val hiltVersion = if (rootProject.extra.has("hiltVersion")) rootProject.extra["hiltVersion"] as String else "2.51.1"
+    testImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
+    kaptTest("com.google.dagger:hilt-android-compiler:$hiltVersion")
+    // Assertions with Truth
+    testImplementation("com.google.truth:truth:1.4.4")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

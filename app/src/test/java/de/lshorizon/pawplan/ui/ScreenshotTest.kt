@@ -7,14 +7,14 @@ import androidx.navigation.compose.rememberNavController
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.runners.JUnit4
 import de.lshorizon.pawplan.core.design.PawPlanTheme
 import de.lshorizon.pawplan.ui.screen.onboarding.OnboardingScreen
 import de.lshorizon.pawplan.ui.screen.onboarding.OnboardingViewModel
 import de.lshorizon.pawplan.core.data.prefs.PrefsRepository
 
 /** Paparazzi snapshot tests capturing key UI screens. */
-@RunWith(AndroidJUnit4::class)
+@RunWith(JUnit4::class) // pure JVM runner for Paparazzi
 class ScreenshotTest {
 
     @get:Rule
