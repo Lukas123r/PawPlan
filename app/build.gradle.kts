@@ -1,26 +1,23 @@
 plugins {
     // Application and Kotlin plugins with Compose, Hilt and KSP support
-    alias(libs.plugins.android.application)
+    id("com.android.library")
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     id("androidx.room") version "2.6.1" // enables Room specific Gradle extensions
+    id("app.cash.paparazzi") version "1.3.0" // snapshot testing without an emulator
 }
 
 android {
-    // Application namespace
+    // Module namespace used for resources and R class generation
     namespace = "de.lshorizon.pawplan"
     compileSdk = 36 // Build against Android 15 (API 36) for newer AndroidX
 
     defaultConfig {
-        applicationId = "de.lshorizon.pawplan"
         minSdk = 24
         targetSdk = 36 // Target Android 15 APIs for compatibility
-        versionCode = 1
-        versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -95,9 +92,9 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     // Compose lifecycle helpers
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.2")
-    testImplementation(libs.junit)
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)
+    testImplementation(libs.androidx.junit) // AndroidX JUnit4 runner for screenshot tests
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -108,6 +105,9 @@ dependencies {
     androidTestImplementation("androidx.test:rules:1.5.0")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    testImplementation(platform("org.jetbrains.kotlin:kotlin-bom")) // Align Kotlin versions in tests
+    testImplementation("junit:junit:4.13.2") // Standard JUnit assertions
+    testImplementation("androidx.compose.ui:ui-test-junit4") // Compose testing utilities for Paparazzi
 }
 
 // Configure Room to export schemas for version tracking

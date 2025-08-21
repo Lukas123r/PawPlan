@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -26,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -42,7 +44,7 @@ import de.lshorizon.pawplan.core.navigation.NavRoutes
 import kotlinx.coroutines.launch
 
 /** Full onboarding flow using a pager and persisted completion flag. */
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class) // Opt-in for experimental app bar and pager APIs
 @Composable
 fun OnboardingScreen(
     navController: NavController,
@@ -76,7 +78,8 @@ fun OnboardingScreen(
                         }) { Text(stringResource(R.string.onboarding_skip)) }
                     }
                 },
-                windowInsets = androidx.compose.foundation.layout.WindowInsets.statusBars,
+                // Use Compose WindowInsets to respect the status bar area
+                windowInsets = WindowInsets.statusBars,
             )
         },
         bottomBar = {
