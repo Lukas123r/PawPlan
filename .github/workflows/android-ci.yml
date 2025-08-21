@@ -30,32 +30,43 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v3
 
-      # Manual SDK setup (avoid newline package bug & interactive prompts)
+      # MANUAL SDK install (no interactive prompts, no newline bug)
       - name: Install Android SDK (manual)
         run: .github/scripts/install-android-sdk.sh
 
-      - name: Write local.properties
+      # Persist env for following steps and write local.properties at repo root
+      - name: Export ANDROID_* env for all steps
+        run: |
+          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+
+      - name: Write local.properties (repo root)
         run: .github/scripts/write-local-properties.sh
 
-      - name: Grant Gradle wrapper
+      - name: Show SDK + repo state
+        run: |
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls -la
+          cat local.properties
+
+      - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Warm up dependencies to avoid long first-run stalls
+      # Warm caches so subsequent tasks don’t stall
       - name: Gradle warmup
         run: ./gradlew -q help
 
-      - name: Assemble debug
+      - name: Assemble :app
         run: ./gradlew :app:assembleDebug --stacktrace --no-daemon --console=plain
 
-      # Run unit tests but never block next steps; produce maximal logs
+      # Run unit tests; do not block later steps; print full logs
       - name: Unit tests (verbose, non-blocking)
         run: |
           set +e
           ./gradlew :app:testDebugUnitTest --stacktrace --info --no-daemon --console=plain
-          echo "::notice::Unit tests finished (see artifacts)."
+          echo "::notice::Unit tests finished (check artifacts)."
           exit 0
 
-      # Paparazzi should run regardless of unit test outcomes
       - name: Paparazzi record (verbose)
         run: ./gradlew :app:recordPaparazziDebug --stacktrace --info --no-daemon --console=plain
 
