@@ -13,12 +13,12 @@ plugins {
 android {
     // Module namespace used for resources and R class generation
     namespace = "de.lshorizon.pawplan"
-    compileSdk = 36 // Build against Android 15 (API 36) for newer AndroidX
+    compileSdk = 33 // Build against Android 13 (API 33) for consistent tooling
 
     defaultConfig {
         applicationId = "de.lshorizon.pawplan" // unique app identifier
         minSdk = 24
-        targetSdk = 36 // Target Android 15 APIs for compatibility
+        targetSdk = 33 // Target Android 13 for runtime compatibility
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -100,15 +100,15 @@ dependencies {
     // Dependency injection with Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("androidx.hilt:hilt-work:1.2.0")
-    ksp("androidx.hilt:hilt-compiler:1.2.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.hilt:hilt-work:1.1.0")
+    ksp("androidx.hilt:hilt-compiler:1.1.0")
     // Background work handling
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
     // Extended icon set for pets etc.
     implementation("androidx.compose.material:material-icons-extended")
     // Compose lifecycle helpers
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)
     // Robolectric for tests that reference Android SDK APIs

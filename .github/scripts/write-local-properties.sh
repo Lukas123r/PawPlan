@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# Writes Android SDK path to local.properties for Gradle
+# Writes a local.properties file so Gradle knows the SDK path
 set -euo pipefail
-ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-SDK_PATH="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-echo "sdk.dir=${SDK_PATH}" > "${ROOT_DIR}/local.properties"
-echo "local.properties written with sdk.dir=${SDK_PATH}"
-
+SDK_ROOT_DEFAULT="/usr/local/lib/android/sdk"
+SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$SDK_ROOT_DEFAULT}}"
+echo "sdk.dir=${SDK_ROOT}" > "$GITHUB_WORKSPACE/local.properties"
+echo "local.properties written with sdk.dir=${SDK_ROOT}"

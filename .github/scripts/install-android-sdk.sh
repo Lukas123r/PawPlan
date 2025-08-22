@@ -20,11 +20,11 @@ ln -sfn "${ANDROID_SDK_ROOT}/cmdline-tools/16.0" "${ANDROID_SDK_ROOT}/cmdline-to
 # Accept licenses without interaction
 yes | "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
 
-# Install packages as SEPARATE args (avoids the newline token bug)
+# Install packages for Android 13 (API 33)
 "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --install \
   "platform-tools" \
-  "platforms;android-34" \
-  "build-tools;34.0.0"
+  "platforms;android-33" \
+  "build-tools;33.0.2"
 
 # Sanity
 "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --list | head -n 50
