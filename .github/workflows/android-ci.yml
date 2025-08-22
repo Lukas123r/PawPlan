@@ -1,5 +1,4 @@
-# Build and test project using Android 13 (API 33)
-name: Android CI (API 33 only)
+name: Android Minimal CI (API 33)
 
 on:
   push:
@@ -12,7 +11,7 @@ jobs:
     env:
       ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
       ANDROID_HOME: /usr/local/lib/android/sdk
-      GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2g -Dorg.gradle.daemon=false -Dfile.encoding=UTF-8"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8"
 
     steps:
       - name: Checkout
@@ -26,6 +25,51 @@ jobs:
 
       - name: Cache Gradle
         uses: gradle/actions/setup-gradle@v3
+
+      # Detect Gradle root directory (where the wrapper lives)
+      - name: Detect Gradle root
+        id: findroot
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f "gradlew" ]; then
+            echo "GRADLEW_DIR=." >> $GITHUB_ENV
+          else
+            WRAP=$(git ls-files | grep -E '/gradlew$' | head -n1 || true)
+            if [ -z "$WRAP" ]; then
+              echo "No Gradle wrapper found"; exit 1
+            fi
+            DIR=$(dirname "$WRAP")
+            echo "GRADLEW_DIR=$DIR" >> $GITHUB_ENV
+          fi
+          echo "Gradle wrapper at: $GRADLEW_DIR"
+
+      # Detect application module name by scanning settings and module build files
+      - name: Detect Android application module
+        id: appmod
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GRADLEW_DIR"
+          # Find modules applying com.android.application
+          MODS=$(grep -Rsl --include='build.gradle*' 'com.android.application' || true)
+          if [ -z "$MODS" ]; then
+            echo "No application module found"; exit 1
+          fi
+          # Choose the first that has a src/main/AndroidManifest.xml
+          APP_DIR=""
+          for f in $MODS; do
+            MDIR=$(dirname "$f")
+            if [ -f "$MDIR/src/main/AndroidManifest.xml" ]; then
+              APP_DIR="$MDIR"
+              break
+            fi
+          done
+          if [ -z "$APP_DIR" ]; then
+            APP_DIR=$(dirname "$(echo "$MODS" | head -n1)")
+          fi
+          echo "APP_MODULE_DIR=$APP_DIR" >> $GITHUB_ENV
+          echo "Detected app module: $APP_DIR"
 
       - name: Install Android SDK (API 33 only)
         uses: android-actions/setup-android@v3
@@ -42,37 +86,35 @@ jobs:
         run: bash .github/scripts/write-local-properties.sh
 
       - name: Gradle help (sanity)
+        working-directory: ${{ env.GRADLEW_DIR }}
         run: ./gradlew -q help
 
-      - name: Assemble :app
-        run: ./gradlew :app:assembleDebug --stacktrace --no-daemon --console=plain
+      - name: Assemble Debug
+        working-directory: ${{ env.GRADLEW_DIR }}
+        run: ./gradlew ${{ env.APP_MODULE_DIR##./ }}:assembleDebug --stacktrace --no-daemon --console=plain
 
-      - name: Unit tests
-        run: ./gradlew :app:testDebugUnitTest --stacktrace --no-daemon --console=plain
+      - name: Run unit tests
+        working-directory: ${{ env.GRADLEW_DIR }}
+        run: ./gradlew ${{ env.APP_MODULE_DIR##./ }}:testDebugUnitTest --stacktrace --no-daemon --console=plain
 
       - name: Paparazzi (if available)
+        working-directory: ${{ env.GRADLEW_DIR }}
+        shell: bash
         run: |
-          if ./gradlew :app:tasks --all | grep -q "recordPaparazziDebug"; then
-            ./gradlew :app:recordPaparazziDebug --stacktrace --no-daemon --console=plain
+          set -euo pipefail
+          if ./gradlew ${{ env.APP_MODULE_DIR##./ }}:tasks --all | grep -q "recordPaparazziDebug"; then
+            ./gradlew ${{ env.APP_MODULE_DIR##./ }}:recordPaparazziDebug --stacktrace --no-daemon --console=plain
           else
             echo "No Paparazzi task found – skipping."
           fi
 
-      - name: Upload test reports
+      - name: Upload reports & screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: unit-test-reports
+          name: reports
           path: |
-            **/build/test-results/**/*
-            **/build/reports/tests/**/*
-          if-no-files-found: warn
-
-      - name: Upload Paparazzi snapshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: paparazzi-snapshots
-          path: |
-            **/build/paparazzi/**/*
+            ${{ env.GRADLEW_DIR }}/**/build/test-results/**/*
+            ${{ env.GRADLEW_DIR }}/**/build/reports/tests/**/*
+            ${{ env.GRADLEW_DIR }}/**/build/paparazzi/**/*
           if-no-files-found: warn
