@@ -18,16 +18,16 @@ plugins {
 }
 
 subprojects {
-    // Align all Android modules with API 36 to satisfy newer dependencies
+    // Align all Android modules with API 33 for a consistent build setup
     plugins.withId("com.android.application") {
         extensions.configure(ApplicationExtension::class) {
-            compileSdk = 36 // Build against Android 14 (API 36)
-            defaultConfig { targetSdk = 36 } // Target the latest Android
+            compileSdk = 33 // Build against Android 13 (API 33)
+            defaultConfig { targetSdk = 33 } // Target Android 13 for runtime behavior
         }
     }
     plugins.withId("com.android.library") {
         extensions.configure(LibraryExtension::class) {
-            compileSdk = 36 // Keep library modules on Android 14 APIs
+            compileSdk = 33 // Keep library modules on Android 13 APIs
         }
     }
 

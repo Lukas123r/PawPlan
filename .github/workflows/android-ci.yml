@@ -1,5 +1,5 @@
-# Workflow to build and test the Android project in CI
-name: Android CI
+# Build and test project using Android 13 (API 33)
+name: Android CI (API 33 only)
 
 on:
   push:
@@ -9,13 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-
     env:
-      JAVA_TOOL_OPTIONS: -Xmx2g
-      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx2g -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8"
-      # Will be exported after setup-android as well:
-      ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2g -Dorg.gradle.daemon=false -Dfile.encoding=UTF-8"
 
     steps:
       - name: Checkout
@@ -27,81 +24,55 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Gradle
+      - name: Cache Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      # Install Android SDK packages. IMPORTANT: use YAML block scalar (|) to keep line breaks.
-      - name: Install Android SDK packages
-        id: setup-android
+      - name: Install Android SDK (API 33 only)
         uses: android-actions/setup-android@v3
         with:
           accept-android-sdk-licenses: true
           log-accepted-android-sdk-licenses: true
-          # Install both 33.0.2 (primary) and 34.0.0 (optional) plus platforms and tools.
+          cmdline-tools-version: 12266719
           packages: |
             platform-tools
             platforms;android-33
             build-tools;33.0.2
-            platforms;android-34
-            build-tools;34.0.0
 
-      # Some runners occasionally fail to fetch packages on the first try. Retry with sdkmanager directly.
-      - name: Retry missing SDK packages (best-effort)
-        if: failure()
-        shell: bash
-        run: |
-          set -euxo pipefail
-          export ANDROID_SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-          yes | "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --licenses || true
-          yes | "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --install \
-            "platform-tools" "platforms;android-33" "build-tools;33.0.2" || true
-
-      # Write local.properties so Gradle always finds the SDK
       - name: Write local.properties
-        shell: bash
-        run: |
-          set -euo pipefail
-          SDK_PATH="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-          echo "sdk.dir=${SDK_PATH}" > "$GITHUB_WORKSPACE/local.properties"
-          echo "Wrote local.properties with sdk.dir=${SDK_PATH}"
-          cat local.properties
-
-      - name: Verify sdkmanager + platform-tools
-        shell: bash
-        run: |
-          set -euxo pipefail
-          "${ANDROID_HOME}/platform-tools/adb" version || true
-          "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --list | head -n 100 || true
+        run: bash .github/scripts/write-local-properties.sh
 
       - name: Gradle help (sanity)
         run: ./gradlew -q help
 
-      - name: Assemble Debug
+      - name: Assemble :app
         run: ./gradlew :app:assembleDebug --stacktrace --no-daemon --console=plain
 
-      # Run pure JVM unit tests (no emulator). Adjust the task name if your module differs.
       - name: Unit tests
         run: ./gradlew :app:testDebugUnitTest --stacktrace --no-daemon --console=plain
 
-      # Paparazzi record (Compose screenshots) if Paparazzi is present.
-      - name: Paparazzi record
-        run: ./gradlew recordPaparazziDebug --stacktrace --no-daemon --console=plain
+      - name: Paparazzi (if available)
+        run: |
+          if ./gradlew :app:tasks --all | grep -q "recordPaparazziDebug"; then
+            ./gradlew :app:recordPaparazziDebug --stacktrace --no-daemon --console=plain
+          else
+            echo "No Paparazzi task found – skipping."
+          fi
 
-      # Collect reports and Paparazzi images for inspection
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports
+          name: unit-test-reports
           path: |
-            **/build/test-results/**
-            **/build/reports/tests/**
+            **/build/test-results/**/*
+            **/build/reports/tests/**/*
+          if-no-files-found: warn
 
-      - name: Upload Paparazzi screenshots
+      - name: Upload Paparazzi snapshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: paparazzi-snapshots
           path: |
-            **/build/paparazzi/**
-
+            **/build/paparazzi/**/*
+          if-no-files-found: warn
